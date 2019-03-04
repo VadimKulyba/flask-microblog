@@ -1,0 +1,8 @@
+*.egg-info
+*.py[cod]
+.*
+__pycache__
+
+!.flake8
+!.gitignore
+!.env
