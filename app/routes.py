@@ -8,28 +8,27 @@ from werkzeug.urls import url_parse
 from app import app
 from app import db
 from app.forms import LoginForm, RegistrationForm
-from app.models import User
+from app.models import User, Post
 
 
 @app.route('/')
 @app.route('/index')
 @login_required
 def index():
-    posts = [
-        {
-            'author': {'username': 'Jenis'},
-            'body': 'Beautiful day in Portland!'
-        },
-        {
-            'author': {'username': 'Susan'},
-            'body': 'The Avengers movie was so cool!'
-        },
-        {
-            'author': {'username': 'Ипполит'},
-            'body': 'Какая гадость эта ваша заливная рыба!!'
-        }
-    ]
+    posts = Post.query.all()
     return render_template('index.html', posts=posts)
+
+
+@app.route('/user/<username>')
+@login_required
+def user(username):
+    user = User.query.filter_by(username=username).first_or_404()
+    return render_template(
+        'user.html',
+        title="Profile",
+        user=user,
+        posts=user.posts
+    )
 
 
 @app.route('/register', methods=['GET', 'POST'])

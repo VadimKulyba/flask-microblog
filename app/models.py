@@ -1,10 +1,13 @@
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime
+from hashlib import md5
 
 from flask_login import UserMixin
 
 from app import login
 from app import db
+
+GRAVATER_URL = 'https://www.gravatar.com/avatar/{}?d=identicon&s={}'
 
 
 class User(UserMixin, db.Model):
@@ -16,6 +19,10 @@ class User(UserMixin, db.Model):
 
     # field no write db (use for model relation)
     posts = db.relationship('Post', backref='author', lazy='dynamic')
+
+    def avatar(self, size):
+        digit = md5(self.email.lower().encode('utf-8')).hexdigest()
+        return GRAVATER_URL.format(digit, size)
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
